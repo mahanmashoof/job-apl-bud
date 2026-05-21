@@ -9,7 +9,9 @@ export const jobStatusEnum = pgEnum("job_status", [
 ]);
 
 export const users = pgTable("users", {
-  id: text("id").primaryKey().default("gen_random_uuid()"),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   email: text("email").notNull().unique(),
   name: text("name"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -17,7 +19,9 @@ export const users = pgTable("users", {
 });
 
 export const jobs = pgTable("jobs", {
-  id: text("id").primaryKey().default("gen_random_uuid()"),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
@@ -32,7 +36,9 @@ export const jobs = pgTable("jobs", {
 });
 
 export const jobAnalyses = pgTable("job_analyses", {
-  id: text("id").primaryKey().default("gen_random_uuid()"),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   jobId: text("job_id")
     .notNull()
     .references(() => jobs.id, { onDelete: "cascade" }),
