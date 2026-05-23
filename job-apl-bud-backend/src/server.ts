@@ -3,6 +3,7 @@ import cors from "@fastify/cors";
 import "dotenv/config";
 import { jobRoutes } from "./routes/jobs";
 import { userRoutes } from "./routes/users";
+import { analysisRoutes } from "./routes/analysis";
 
 const app = Fastify();
 
@@ -11,6 +12,7 @@ app.register(cors, {
 });
 app.register(jobRoutes);
 app.register(userRoutes);
+app.register(analysisRoutes);
 
 app.get("/health", async () => {
   return { status: "ok" };
