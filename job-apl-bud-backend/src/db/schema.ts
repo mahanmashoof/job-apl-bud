@@ -18,6 +18,21 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const userProfiles = pgTable("user_profiles", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => users.id, { onDelete: "cascade" }),
+  baseCV: text("base_cv").notNull(),
+  skills: text("skills").array().notNull().default([]),
+  experience: text("experience"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const jobs = pgTable("jobs", {
   id: text("id")
     .primaryKey()
