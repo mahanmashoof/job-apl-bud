@@ -64,3 +64,21 @@ export const jobAnalyses = pgTable("job_analyses", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const cvVersions = pgTable("cv_versions", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  jobId: text("job_id")
+    .notNull()
+    .unique()
+    .references(() => jobs.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  changes: text("changes").array().notNull().default([]),
+  explanation: text("explanation").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

@@ -5,6 +5,7 @@ import { jobRoutes } from "./routes/jobs";
 import { userRoutes } from "./routes/users";
 import { analysisRoutes } from "./routes/analysis";
 import { profileRoutes } from "./routes/profiles";
+import { cvVersionRoutes } from "./routes/cvVersions";
 
 const app = Fastify();
 
@@ -15,6 +16,7 @@ app.register(jobRoutes);
 app.register(userRoutes);
 app.register(analysisRoutes);
 app.register(profileRoutes);
+app.register(cvVersionRoutes);
 
 app.get("/health", async () => {
   return { status: "ok" };

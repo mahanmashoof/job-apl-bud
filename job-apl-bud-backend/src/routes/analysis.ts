@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { db } from "../db/client";
-import { jobs, jobAnalyses } from "../db/schema";
+import { jobs, jobAnalyses, userProfiles } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { analyzeJob } from "../ai/analyzeJob";
 
@@ -8,10 +8,7 @@ export async function analysisRoutes(app: FastifyInstance) {
   // Analyze a job
   app.post("/jobs/:id/analyze", async (request, reply) => {
     const { id } = request.params as { id: string };
-    const { userSkills, userExperience } = request.body as {
-      userSkills: string[];
-      userExperience?: string;
-    };
+    const { userId } = request.body as { userId: string };
 
     // Fetch the job first
     const job = await db.select().from(jobs).where(eq(jobs.id, id));
@@ -19,12 +16,23 @@ export async function analysisRoutes(app: FastifyInstance) {
       return reply.code(404).send({ error: "Job not found" });
     }
 
+    // Fetch the user profile
+    const profile = await db
+      .select()
+      .from(userProfiles)
+      .where(eq(userProfiles.userId, userId));
+    if (!profile.length) {
+      return reply
+        .code(404)
+        .send({ error: "No profile found — create a profile first" });
+    }
+
     // Run the AI pipeline
     const result = await analyzeJob({
       jobTitle: job[0].title,
       jobDescription: job[0].description,
-      userSkills,
-      userExperience,
+      userSkills: profile[0].skills,
+      userExperience: profile[0].experience ?? undefined,
     });
 
     // Save the analysis to the database
@@ -36,6 +44,16 @@ export async function analysisRoutes(app: FastifyInstance) {
         strengths: result.strengths,
         gaps: result.gaps,
         reasoning: result.reasoning,
+      })
+      .onConflictDoUpdate({
+        target: jobAnalyses.jobId,
+        set: {
+          matchScore: result.matchScore,
+          strengths: result.strengths,
+          gaps: result.gaps,
+          reasoning: result.reasoning,
+          updatedAt: new Date(),
+        },
       })
       .returning();
 
