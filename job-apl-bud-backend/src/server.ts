@@ -4,6 +4,7 @@ import "dotenv/config";
 import { jobRoutes } from "./routes/jobs";
 import { userRoutes } from "./routes/users";
 import { analysisRoutes } from "./routes/analysis";
+import { profileRoutes } from "./routes/profiles";
 
 const app = Fastify();
 
@@ -13,6 +14,7 @@ app.register(cors, {
 app.register(jobRoutes);
 app.register(userRoutes);
 app.register(analysisRoutes);
+app.register(profileRoutes);
 
 app.get("/health", async () => {
   return { status: "ok" };
