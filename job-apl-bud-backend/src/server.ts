@@ -6,6 +6,7 @@ import { userRoutes } from "./routes/users";
 import { analysisRoutes } from "./routes/analysis";
 import { profileRoutes } from "./routes/profiles";
 import { cvVersionRoutes } from "./routes/cvVersions";
+import { nudgeRoutes } from "./routes/nudges";
 
 const app = Fastify();
 
@@ -17,6 +18,7 @@ app.register(userRoutes);
 app.register(analysisRoutes);
 app.register(profileRoutes);
 app.register(cvVersionRoutes);
+app.register(nudgeRoutes);
 
 app.get("/health", async () => {
   return { status: "ok" };

@@ -1,4 +1,11 @@
-import { pgTable, text, integer, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  integer,
+  timestamp,
+  pgEnum,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
 
 export const jobStatusEnum = pgEnum("job_status", [
   "SAVED",
@@ -82,3 +89,36 @@ export const cvVersions = pgTable("cv_versions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const nudgeTypeEnum = pgEnum("nudge_type", [
+  "APPLY",
+  "FOLLOW_UP",
+  "SKILL_GAP_JOB",
+  "SKILL_GAP_PATTERN",
+  "GENERAL",
+]);
+
+export const nudges = pgTable(
+  "nudges",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    jobId: text("job_id").references(() => jobs.id, { onDelete: "cascade" }),
+    type: nudgeTypeEnum("type").notNull(),
+    message: text("message").notNull(),
+    isRead: text("is_read").notNull().default("false"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    uniqueNudge: uniqueIndex("unique_nudge").on(
+      table.userId,
+      table.jobId,
+      table.type,
+    ),
+  }),
+);
