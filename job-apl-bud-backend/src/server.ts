@@ -7,12 +7,14 @@ import { analysisRoutes } from "./routes/analysis";
 import { profileRoutes } from "./routes/profiles";
 import { cvVersionRoutes } from "./routes/cvVersions";
 import { nudgeRoutes } from "./routes/nudges";
+import apiKeyPlugin from "./plugins/apiKey";
 
 const app = Fastify();
 
 app.register(cors, {
   origin: true,
 });
+app.register(apiKeyPlugin);
 app.register(jobRoutes);
 app.register(userRoutes);
 app.register(analysisRoutes);
