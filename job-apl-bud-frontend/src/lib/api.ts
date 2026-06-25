@@ -23,6 +23,7 @@ async function apiFetch(path: string, options: RequestInit = {}) {
 export const api = {
   // Jobs
   getJobs: () => apiFetch("/jobs"),
+  getJob: (id: string) => apiFetch(`/jobs/${id}`),
   createJob: (data: {
     title: string;
     company: string;

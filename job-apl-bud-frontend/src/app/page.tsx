@@ -1,9 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { api, USER_ID } from "@/lib/api";
+import { api } from "@/lib/api";
 import { useState } from "react";
 import AddJobModal from "@/components/AddJobModal";
+import { useRouter } from "next/navigation";
 
 const STATUS_COLUMNS = [
   "SAVED",
@@ -47,6 +48,7 @@ export default function Home() {
     queryKey: ["jobs"],
     queryFn: () => api.getJobs(),
   });
+  const router = useRouter();
   const [showAddJob, setShowAddJob] = useState(false);
 
   if (isLoading)
@@ -87,7 +89,7 @@ export default function Home() {
       {/* Pipeline board */}
       <div className="p-8 flex gap-4 overflow-x-auto">
         {STATUS_COLUMNS.map((status) => (
-          <div key={status} className="flex-shrink-0 w-72">
+          <div key={status} className="shrink-0 w-72">
             {/* Column header */}
             <div className="flex items-center justify-between mb-3">
               <span
@@ -105,6 +107,7 @@ export default function Home() {
               {jobsByStatus[status].map((job) => (
                 <div
                   key={job.id}
+                  onClick={() => router.push(`/jobs/${job.id}`)}
                   className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-sm transition-shadow cursor-pointer"
                 >
                   <p className="text-sm font-semibold text-gray-900">
